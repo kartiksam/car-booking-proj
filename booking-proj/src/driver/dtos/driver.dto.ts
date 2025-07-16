@@ -27,6 +27,7 @@ export class DriverDto {
     status: DriverStatus
 
     @IsOptional()
+    @ApiProperty()
     @ValidateNested()
     @Type(() => LocationDto)
     location?: LocationDto;
