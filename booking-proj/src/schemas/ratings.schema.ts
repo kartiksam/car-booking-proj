@@ -4,19 +4,19 @@ import { Prop, Schema } from "@nestjs/mongoose";
 export class RatingSchema {
 
     @Prop({ required: true })
-    rideId: string; // Reference to RideSchema
+    rideId: string;
 
     @Prop({ required: true })
-    userId: string; // Reference to UserSchema
+    userId: string;
 
     @Prop({ required: true })
-    driverId: string; // Reference to UserSchema for the driver
+    driverId: string;
 
     @Prop({ required: true })
-    rating: number; // Rating value, e.g., 1 to 5
+    rating: number;
 
     @Prop({ required: true })
-    review: string; // Optional comment about the ride
+    review: string;
 
 
 

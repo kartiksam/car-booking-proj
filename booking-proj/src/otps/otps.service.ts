@@ -28,7 +28,7 @@ export class OtpsService {
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         const expiresAt = new Date(Date.now() + 3 * 60 * 1000);
 
-        await this.otpModel.deleteMany({ userId });
+
         await this.otpModel.create({
             userId: new Types.ObjectId(userId),
             otp,
@@ -68,7 +68,7 @@ export class OtpsService {
             return { sucess: false, message: "Invalid Otp" };
         }
 
-        await this.otpModel.deleteOne({ _id: record._id });
+
         await this.userService.markVerified(dto.userId.toString());
 
         return { success: true, message: 'Otp Verified Successfully' };

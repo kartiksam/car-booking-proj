@@ -1,24 +1,24 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { OtpsService } from './otps.service';
-import { GenerateOtpDto, VerifyOtpDto } from './dto/otp.dto';
+// import { Body, Controller, Post } from '@nestjs/common';
+// import { OtpsService } from './otps.service';
+// import { GenerateOtpDto, VerifyOtpDto } from './dto/otp.dto';
 
-@Controller('otps')
-export class OtpsController {
+// @Controller()
+// export class OtpsController {
 
-    constructor(private readonly otpService: OtpsService) { }
+//     constructor(private readonly otpService: OtpsService) { }
 
-    @Post("/generate")
-    async generateOtp(@Body() dto: GenerateOtpDto) {
+//     @Post("/generate")
+//     async generateOtp(@Body() dto: GenerateOtpDto) {
 
-        // return await this.otpService.generateOtp(dto);
-    }
+//         // return await this.otpService.generateOtp(dto);
+//     }
 
-    @Post("/verify")
-    async verifyOtp(@Body() dto: VerifyOtpDto) {
+//     @Post("/verify")
+//     async verifyOtp(@Body() dto: VerifyOtpDto) {
 
-        // return await this.otpService.verifyOtp(dto);
+//         // return await this.otpService.verifyOtp(dto);
 
-    }
+//     }
 
 
-}
+// }

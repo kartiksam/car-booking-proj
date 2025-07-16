@@ -9,10 +9,13 @@ import { EmailModule } from './email/email.module';
 import { LoginModule } from './login-logmodule/login-logmodule.module';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
+import { DriverModule } from './driver/driver.module';
+import { BookingModule } from './booking/booking.module';
+import { VehicleModule } from './vehicle/vehicle.module';
 
 
 @Module({
-  imports: [MongooseModule.forRoot('mongodb://localhost:27017/cab'), UsersModule, AuthModule, OtpsModule, EmailModule, OtpsModule, LoginModule, ConfigModule.forRoot({ isGlobal: true }), ScheduleModule.forRoot()],
+  imports: [MongooseModule.forRoot('mongodb://localhost:27017/cab'), UsersModule, AuthModule, OtpsModule, EmailModule, OtpsModule, LoginModule, ConfigModule.forRoot({ isGlobal: true }), ScheduleModule.forRoot(), DriverModule, BookingModule, VehicleModule],
   controllers: [],
   providers: [AppService],
 })

@@ -1,5 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import moment from "moment";
+import * as moment from "moment";
+import mongoose, { Types } from "mongoose";
+import { VehicleType } from "src/enums/vehicle.type";
 
 export type VehicleDocument = Vehicle & Document;
 
@@ -15,14 +17,20 @@ export class Vehicle {
     @Prop({ required: true })
     vehicleModel: string;
 
-    @Prop({ required: true })
-    dailyRate: number;
+    @Prop()
+    dailyRate?: number;
 
-    @Prop({ required: true })
-    vehicleType: string;
+    @Prop({
+        type: String,
+        enum: Object.values(VehicleType),
+        default: null
+    })
+    vehicleType: VehicleType;
 
-    @Prop({ required: true })
-    driverId: string; // Reference to DriverSchema
+    @Prop({
+        type: mongoose.Schema.Types.ObjectId, ref: 'driver_Profile'
+    })
+    driverId?: Types.ObjectId;
 
     @Prop({ type: Number, default: moment().utc().valueOf() })
     created_at: number;

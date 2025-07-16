@@ -17,7 +17,7 @@ export class User {
 
     @Prop({
         type: String,
-        enum: Object.values(UserRole), // ✅ Use enum values as allowed strings
+        enum: Object.values(UserRole),
         default: null
     })
     role: UserRole;
@@ -25,7 +25,7 @@ export class User {
     @Prop({ type: String, default: null })
     isVerified: string;
 
-    @Prop({ type: Number, default: () => moment().utc().valueOf() }) // ✅ wrap in function
+    @Prop({ type: Number, default: () => moment().utc().valueOf() })
     created_at: number;
 
     @Prop({ type: Number, default: null })

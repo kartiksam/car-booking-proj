@@ -1,7 +1,10 @@
-import { Prop, Schema } from "@nestjs/mongoose";
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document } from "mongoose";
+import * as moment from "moment";
+export type BookingDocument = Booking & Document;
 
 @Schema()
-export class RideSchema {
+export class Booking {
     @Prop({ required: true })
     pickupLocation: string;
 
@@ -12,14 +15,21 @@ export class RideSchema {
     rideDate: Date;
 
     @Prop({ required: true })
-    vehicleId: string; // Reference to VehicleSchema
+    vehicleId: string;
 
     @Prop({ required: true })
-    driverId: string; // Reference to UserSchema
+    driverId: string;
 
-    @Prop({ type: Number, default: null })
+    @Prop({ default: null })
+    lat_lng?: string;
+
+    @Prop({ default: null })
+    fare?: number;
+
+    @Prop({ type: Number, default: moment().utc().valueOf() })
     created_at: number;
 
     @Prop({ type: Number, default: null })
     updated_at: number;
 }
+export const BookingSchema = SchemaFactory.createForClass(Booking);

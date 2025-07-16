@@ -13,7 +13,7 @@ export class paymentSchema {
     amount: number;
 
     @Prop({ required: true })
-    paymentMethod: string; // e.g., 'credit_card', 'cash'
+    paymentMethod: string;
 
     @Prop({ type: Date, default: Date.now })
     created_at: Date;
