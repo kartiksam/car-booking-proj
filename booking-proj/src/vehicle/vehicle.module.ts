@@ -9,6 +9,7 @@ import { AuthModule } from 'src/auth/auth.module';
 @Module({
   imports: [MongooseModule.forFeature([{ name: Vehicle.name, schema: VehicleSchema }]), DriverModule, AuthModule],
   controllers: [VehicleController],
-  providers: [VehicleService]
+  providers: [VehicleService],
+  exports: [MongooseModule]
 })
 export class VehicleModule { }

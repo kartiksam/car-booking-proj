@@ -4,7 +4,7 @@ export function toRegisterDriver(dto: any): any {
     return {
         phoneNumber: dto.phoneNumber,
         licenseNumber: dto.licenseNumber,
-        status: dto.status || DriverStatus.ACTIVE, // Default to ACTIVE if not provided
+        status: dto.status // Default to ACTIVE if not provided
 
     }
 }

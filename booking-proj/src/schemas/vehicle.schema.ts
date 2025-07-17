@@ -1,9 +1,9 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import * as moment from "moment";
-import mongoose, { Types } from "mongoose";
+import mongoose, { HydratedDocument, Types } from "mongoose";
 import { VehicleType } from "src/enums/vehicle.type";
 
-export type VehicleDocument = Vehicle & Document;
+export type VehicleDocument = HydratedDocument<Vehicle>;
 
 @Schema()
 export class Vehicle {
@@ -31,6 +31,13 @@ export class Vehicle {
         type: mongoose.Schema.Types.ObjectId, ref: 'driver_Profile'
     })
     driverId?: Types.ObjectId;
+
+    @Prop({
+        type: String,
+        enum: ['available', 'in_use', 'maintenance'],
+        default: 'available'
+    })
+    status: string;
 
     @Prop({ type: Number, default: moment().utc().valueOf() })
     created_at: number;

@@ -5,11 +5,30 @@ export type BookingDocument = Booking & Document;
 
 @Schema()
 export class Booking {
-    @Prop({ required: true })
-    pickupLocation: string;
+    @Prop({
+        type: {
+            lat: { type: Number, required: true },
+            lng: { type: Number, required: true },
+        },
+        required: true
+    })
+    pickupLocation: {
+        lat: number;
+        lng: number;
+    };
 
-    @Prop({ required: true })
-    dropoffLocation: string;
+    @Prop({
+        type: {
+            lat: { type: Number, required: true },
+            lng: { type: Number, required: true },
+        },
+        required: true
+    })
+    dropLocation: {
+        lat: number;
+        lng: number;
+    };
+
 
     @Prop({ required: true })
     rideDate: Date;
@@ -20,8 +39,6 @@ export class Booking {
     @Prop({ required: true })
     driverId: string;
 
-    @Prop({ default: null })
-    lat_lng?: string;
 
     @Prop({ default: null })
     fare?: number;

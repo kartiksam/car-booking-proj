@@ -64,6 +64,7 @@ export class OtpsService {
             return { success: false, message: "Otp Expired" };
         }
 
+        console.log(`Verifying Otp for user ${dto.userId}: ${record.otp} against ${dto.otp}`);
         if (record.otp != dto.otp) {
             return { sucess: false, message: "Invalid Otp" };
         }

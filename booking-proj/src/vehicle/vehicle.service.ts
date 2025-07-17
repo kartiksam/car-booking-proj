@@ -17,20 +17,23 @@ export class VehicleService {
             throw new Error('User not authenticated');
         }
 
-        const driverProfileId = await this.driverModel.findOne({ userId });
-        if (!driverProfileId) {
+        const driverProfile = await this.driverModel.findOne({ userId });
+        if (!driverProfile) {
             throw new Error('Driver profile not found for the user');
         }
 
-        console.log('Driver Profile ID:', driverProfileId._id);
+        console.log('Driver Profile ID:', driverProfile._id);
         const { vehicleName, vehicleNumber, vehicleModel, vehicleType } = dto;
         const newVehicle = new this.vehicleModel({
             vehicleModel,
             vehicleNumber,
             vehicleName,
             vehicleType,
-            driverId: driverProfileId._id // Assigning the driver's profile ID to the vehicle
+            driverId: driverProfile._id // Assigning the driver's profile ID to the vehicle
         })
+        driverProfile.vehicleId = newVehicle._id;
+        await driverProfile.save();
+
 
         await newVehicle.save();
         return newVehicle;

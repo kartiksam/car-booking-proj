@@ -1,11 +1,13 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import * as  moment from "moment";
 import { DriverStatus } from "src/enums/driver.status";
-import mongoose, { Types } from "mongoose";
+import mongoose, { HydratedDocument, Types } from "mongoose";
+import { raw } from '@nestjs/mongoose';
 
-export type DriverProfileDocument = driver_Profile & Document;
+export type DriverProfileDocument = HydratedDocument<driver_Profile>;
 
-@Schema()
+
+@Schema({ collection: 'driver_profile' })
 export class driver_Profile {
 
     @Prop({ required: true })
@@ -17,7 +19,8 @@ export class driver_Profile {
     @Prop({
         type: String,
         enum: Object.values(DriverStatus),
-        default: null
+        default: DriverStatus.AVAILABLE
+
     })
     status: DriverStatus;
 
@@ -25,7 +28,7 @@ export class driver_Profile {
     isOnline: boolean;
 
     @Prop({
-        type: mongoose.Schema.Types.ObjectId, ref: 'User'
+        type: mongoose.Schema.Types.ObjectId, ref: 'User', unique: true
     })
     userId?: Types.ObjectId;
 
@@ -35,22 +38,22 @@ export class driver_Profile {
     vehicleId?: Types.ObjectId;
 
 
-    @Prop({
+
+    @Prop(raw({
         type: {
             type: String,
             enum: ['Point'],
-            default: 'Point'
+            required: true,
         },
         coordinates: {
             type: [Number],
-            index: '2dsphere'
-        }
-    })
+            required: true,
+        },
+    }))
     location: {
-        type: 'Point',
-        coordinates: [number, number]
+        type: 'Point';
+        coordinates: [number, number];
     };
-
 
     @Prop({ type: Number, default: moment().utc().valueOf() })
     created_at: number;
@@ -60,3 +63,4 @@ export class driver_Profile {
 }
 
 export const DriverProfileSchema = SchemaFactory.createForClass(driver_Profile);
+DriverProfileSchema.index({ location: '2dsphere' });

@@ -1,21 +1,27 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { IsNotEmpty } from "class-validator";
 
 export class BookingDto {
 
+    @IsNotEmpty()
     @ApiProperty()
-    pickupLocation: string;
+    pickupLocation: {
+        lat: number;
+        lng: number;
+    };
 
     @ApiProperty()
-    dropoffLocation: string;
+    @IsNotEmpty()
+    dropLocation: {
+        lat: number;
+        lng: number;
+    };
+
 
     @ApiProperty()
     rideDate: Date;
 
-    @ApiProperty()
-    vehicleId: string;
 
-    @ApiProperty()
-    driverId: string;
 
     lat_lng?: string;
     created_at?: number;

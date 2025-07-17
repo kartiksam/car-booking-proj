@@ -8,7 +8,7 @@ export class DriverService {
     constructor(@InjectModel(driver_Profile.name) private driverProfileModel: Model<DriverProfileDocument>) { }
 
     async registerDriver(req: Request, dto: any): Promise<driver_Profile> {
-        const { phoneNumber, licenseNumber, status } = dto;
+        const { phoneNumber, licenseNumber, status, location } = dto;
         console.log('Registering driver with data:', dto);
         const userId = (req as any).user?.id;
         if (!phoneNumber || !licenseNumber) {
@@ -17,10 +17,19 @@ export class DriverService {
         const profile = await new this.driverProfileModel({
             phoneNumber,
             licenseNumber,
-            status, userId
+            status, userId, location
         })
         console.log('Creating driver profile:', profile);
         await profile.save();
         return toRegisterDriver(profile);
     }
+
+  
+     async 
+
+
+
+
+
+
 }

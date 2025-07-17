@@ -21,7 +21,7 @@ export class UserProfile {
     status: string;
 
     @Prop({ required: true })
-    userId: string;
+    userId?: string;
 
     @Prop({ type: Number, default: moment().utc().valueOf() })
     created_at: number;

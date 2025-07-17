@@ -22,8 +22,8 @@ export class User {
     })
     role: UserRole;
 
-    @Prop({ type: String, default: null })
-    isVerified: string;
+    @Prop({ type: Boolean, default: false })
+    isVerified: boolean;
 
     @Prop({ type: Number, default: () => moment().utc().valueOf() })
     created_at: number;

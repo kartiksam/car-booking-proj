@@ -17,6 +17,5 @@ export class VehicleDto {
     @ApiProperty()
     vehicleType: VehicleType;
 
-    @ApiProperty()
-    driverId?: string; // Optional, as it may not be assigned at creation time
+
 }

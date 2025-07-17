@@ -1,7 +1,7 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { BookingDto } from './dtos/booking.dto';
-import { Booking } from 'src/schemas/ride.schema';
+import { Booking } from 'src/schemas/booking.schema';
 import { KartikAuth } from 'src/auth/auth';
 import { RolesGuard } from 'src/auth/role.guard.service';
 import { Roles } from 'src/decorators/roles.decorator';
@@ -17,8 +17,8 @@ export class BookingController {
     @Roles(UserRole.USER)
     @ApiBearerAuth()
     @Post('/create')
-    async createBooking(@Body() bookingDto: BookingDto): Promise<Booking> {
-        return await this.bookingService.createBooking(bookingDto);
+    async createBooking(@Req() req: Request, @Body() bookingDto: BookingDto): Promise<Booking> {
+        return await this.bookingService.createBooking(req, bookingDto);
     }
 
 
