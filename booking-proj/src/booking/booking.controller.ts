@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Req, Get, UseGuards } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { BookingDto } from './dtos/booking.dto';
 import { Booking } from 'src/schemas/booking.schema';
@@ -21,5 +21,12 @@ export class BookingController {
         return await this.bookingService.createBooking(req, bookingDto);
     }
 
+    @UseGuards(KartikAuth, RolesGuard)
+    @Roles(UserRole.DRIVER)
+    @ApiBearerAuth()
+    @Get('/bookings/driver')
+    async getDriverBookings(@Req() req: Request): Promise<Booking[]> {
+        return this.bookingService.getDriverBookings(req);
+    }
 
 }

@@ -1,10 +1,14 @@
-import { Controller, Post, Body, Req, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Post, Body, Req, UseInterceptors, UploadedFile, UseGuards } from '@nestjs/common';
 import { UserDetailsService } from './user-details.service';
 import { CreateUserDetailDto } from './dto/create-user-detail.dto'
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerStorage } from 'src/interceptors/image.intercptor';
-import { ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { Express } from 'express'
+import { KartikAuth } from 'src/auth/auth';
+import { RolesGuard } from 'src/auth/role.guard.service';
+import { UserRole } from 'src/enums/user.role';
+import { Roles } from 'src/decorators/roles.decorator';
 
 @Controller('user-details')
 
@@ -12,13 +16,15 @@ export class UserDetailsController {
   constructor(private readonly userDetailsService: UserDetailsService) { }
 
 
-  @Post()
+  @UseGuards(KartikAuth, RolesGuard)
+  @Roles(UserRole.USER)
+  @ApiBearerAuth()
+  @Post('/profile')
   @UseInterceptors(
     FileInterceptor('file', {
       storage: multerStorage,
     }),
   )
-  @ApiConsumes('multipart/form-data')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     description: 'Create user with profile image',

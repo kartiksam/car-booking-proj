@@ -75,4 +75,26 @@ export class BookingService {
         return booking;
     }
 
+
+
+    async getDriverBookings(req: Request): Promise<Booking[]> {
+
+        const userId = (req as any).user?.id;
+        console.log('Fetching bookings for user ID:', userId);
+        const driver = await this.driverModel.findOne({ userId })
+        if (!driver) {
+            console.log(`Driver not found for user ID: ${userId}`);
+            throw new NotFoundException(`Driver not found for user ID: ${userId}`);
+
+        }
+
+        const bookings = await this.bookingModel.find({
+            driverId: driver._id,
+        });
+
+
+        console.log(`Found ${bookings.length} bookings for driver ID: ${driver._id} `);
+        return bookings;
+    }
+
 }

@@ -20,7 +20,7 @@ export class UserProfile {
     @Prop({ required: true })
     status: string;
 
-    @Prop({ required: true })
+    @Prop()
     userId?: string;
 
     @Prop({ type: Number, default: moment().utc().valueOf() })
