@@ -9,6 +9,6 @@ import { AuthModule } from 'src/auth/auth.module';
   imports: [MongooseModule.forFeature([{ name: driver_Profile.name, schema: DriverProfileSchema }]), AuthModule],
   controllers: [DriverController],
   providers: [DriverService],
-  exports: [MongooseModule]
+  exports: [MongooseModule, DriverService]
 })
 export class DriverModule { }

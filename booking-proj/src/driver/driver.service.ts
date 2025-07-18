@@ -56,6 +56,29 @@ export class DriverService {
     }
 
 
+    // driver.service.ts
+    async updateLocation(driverId: string, dto: { coordinates: [number, number] }) {
+        return this.driverProfileModel.findByIdAndUpdate(
+            driverId,
+            {
+                location: {
+                    type: 'Point',
+                    coordinates: dto.coordinates,
+                },
+                updated_at: Date.now(),
+            },
+            { new: true }
+        );
+    }
+
+
+
+
+
+
+
+
+
 
 
 
