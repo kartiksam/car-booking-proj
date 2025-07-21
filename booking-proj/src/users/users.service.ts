@@ -15,25 +15,6 @@ export class UsersService {
 
     constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) { }
 
-    async create(dto: RegisterDto): Promise<ResponseUserDto> {
-        console.log(dto);
-        const { name, email, password, role, contact } = dto;
-
-        const existingUser = await this.userModel.findOne({ email });
-        if (existingUser) {
-            throw new ConflictException('User already exists');
-        }
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
-        const user = new this.userModel({
-            name,
-            email, password: hashedPassword, role, contact
-
-        });
-        await user.save();
-        return toResponseDto(user);
-    }
-
 
     async getData(): Promise<ResponseUserDto[]> {
         const users = this.userModel.find().exec();

@@ -17,8 +17,7 @@ export class OtpsService {
 
     constructor(@InjectModel(Otp.name) private otpModel: Model<OtpDocument>, @InjectModel(User.name) private userModel: Model<UserDocument>, private readonly userService: UsersService, private readonly emailService: EmailService,
         private readonly twilioService: TwilioService,
-        @InjectModel(UserProfile.name)
-        private readonly userProfileModel: Model<UserProfileDocument>
+
     ) { }
 
 
@@ -51,10 +50,7 @@ export class OtpsService {
             subject: 'Your OTP Code',
             html: `<p>Your OTP is <strong>${otp}</strong>. It will expire in 3 minutes.</p>`,
         });
-        // const profile = await this.userProfileModel.findOne({ userId: userId });
-        // if (!pr.contact) {
-        //     console.warn(`No phone number found in profile for user ${userId}`);
-        // }
+
 
 
         // // 🧾 SMS sending via Twilio

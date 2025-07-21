@@ -11,7 +11,7 @@ import { TwilioModule } from 'src/twilio/twilio.module';
 
 @Module({
   imports: [MongooseModule.forFeature([{ name: Otp.name, schema: OtpSchema }]),
-  forwardRef(() => UsersModule), EmailModule, forwardRef(() => UserDetailsModule), TwilioModule],
+  forwardRef(() => UsersModule), EmailModule, TwilioModule],
   controllers: [],
   providers: [OtpsService],
   exports: [OtpsService]
