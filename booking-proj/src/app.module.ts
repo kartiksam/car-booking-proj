@@ -13,13 +13,15 @@ import { DriverModule } from './driver/driver.module';
 import { BookingModule } from './booking/booking.module';
 import { VehicleModule } from './vehicle/vehicle.module';
 import { UserDetailsModule } from './user-details/user-details.module';
-import { DriverLocationGateway } from './driver-location/driver-location.gateway';
+import { GatewayModule } from './gateway/gateway.module';
+import { TwilioModule } from './twilio/twilio.module';
+
 
 
 
 @Module({
-  imports: [MongooseModule.forRoot('mongodb://localhost:27017/cab'), UsersModule, AuthModule, OtpsModule, EmailModule, OtpsModule, LoginModule, ConfigModule.forRoot({ isGlobal: true }), ScheduleModule.forRoot(), DriverModule, BookingModule, VehicleModule, UserDetailsModule],
+  imports: [MongooseModule.forRoot('mongodb://localhost:27017/cab'), UsersModule, AuthModule, OtpsModule, EmailModule, OtpsModule, LoginModule, ConfigModule.forRoot({ isGlobal: true }), ScheduleModule.forRoot(), DriverModule, BookingModule, VehicleModule, UserDetailsModule, GatewayModule, TwilioModule],
   controllers: [],
-  providers: [AppService, DriverLocationGateway],
+  providers: [AppService,],
 })
 export class AppModule { }

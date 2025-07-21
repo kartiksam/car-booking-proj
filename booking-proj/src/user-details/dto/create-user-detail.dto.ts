@@ -5,8 +5,7 @@ export class CreateUserDetailDto {
     @ApiProperty()
     address: string;
 
-    @ApiProperty()
-    contact: number;
+
 
     @ApiProperty()
     dateOfBirth: Date;

@@ -1,0 +1,16 @@
+<!-- driver-socket-test.html -->
+<script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+<script>
+  const driverId = "6878cefe29b4de90263c9e56";
+  const socket = io("http://localhost:3000", {
+    query: { userId: driverId },
+  });
+
+  socket.on("connect", () => {
+    console.log("Connected as driver:", driverId);
+  });
+
+  socket.on("newBookingRequest", (data) => {
+    console.log("🚕 New Booking Received:", data);
+  });
+</script>

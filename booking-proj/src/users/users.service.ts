@@ -16,7 +16,8 @@ export class UsersService {
     constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) { }
 
     async create(dto: RegisterDto): Promise<ResponseUserDto> {
-        const { name, email, password, role } = dto;
+        console.log(dto);
+        const { name, email, password, role, contact } = dto;
 
         const existingUser = await this.userModel.findOne({ email });
         if (existingUser) {
@@ -26,7 +27,7 @@ export class UsersService {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
         const user = new this.userModel({
             name,
-            email, password: hashedPassword, role
+            email, password: hashedPassword, role, contact
 
         });
         await user.save();

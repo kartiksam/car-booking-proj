@@ -7,13 +7,19 @@ import { EmailService } from '../email/email.service';
 import { User, UserDocument } from 'src/schemas/user.schema';
 import { UsersService } from 'src/users/users.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { TwilioService } from 'src/twilio/twilio.service';
+import { UserProfile, UserProfileDocument } from 'src/schemas/user_profile.schema';
 
 
 
 @Injectable()
 export class OtpsService {
 
-    constructor(@InjectModel(Otp.name) private otpModel: Model<OtpDocument>, @InjectModel(User.name) private userModel: Model<UserDocument>, private readonly userService: UsersService, private readonly emailService: EmailService) { }
+    constructor(@InjectModel(Otp.name) private otpModel: Model<OtpDocument>, @InjectModel(User.name) private userModel: Model<UserDocument>, private readonly userService: UsersService, private readonly emailService: EmailService,
+        private readonly twilioService: TwilioService,
+        @InjectModel(UserProfile.name)
+        private readonly userProfileModel: Model<UserProfileDocument>
+    ) { }
 
 
     @Cron(CronExpression.EVERY_5_MINUTES)
@@ -34,19 +40,37 @@ export class OtpsService {
             otp,
             expiresAt
         })
-
         const user = await this.userModel.findById(userId);
         if (!user || !user.email) {
             return { message: 'User email not found' };
         }
 
-
+        console.log(`Your otp is ${otp}`)
         await this.emailService.sendEmail({
             recipients: [user.email],
             subject: 'Your OTP Code',
             html: `<p>Your OTP is <strong>${otp}</strong>. It will expire in 3 minutes.</p>`,
         });
-        console.log(`Generated Otp for ${userId}: ${otp}`);
+        // const profile = await this.userProfileModel.findOne({ userId: userId });
+        // if (!pr.contact) {
+        //     console.warn(`No phone number found in profile for user ${userId}`);
+        // }
+
+
+        // // 🧾 SMS sending via Twilio
+        if (user?.contact) {
+            try {
+                await this.twilioService.sendSms(
+                    user?.contact.toString(),
+                    `Your OTP is ${otp}. It will expire in 3 minutes.`
+                );
+                console.log(`📲 OTP sent to phone ${user.contact}`);
+            } catch (error) {
+                console.error('Failed to send OTP via SMS:', error.message);
+            }
+        }
+
+        // console.log(`Generated Otp for ${userId}: ${otp}`);
         return { message: `OPt sent successfully on email ${user.email}` };
 
     }

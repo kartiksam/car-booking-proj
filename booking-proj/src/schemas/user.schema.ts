@@ -15,6 +15,7 @@ export class User {
     @Prop({ required: true })
     password: string;
 
+
     @Prop({
         type: String,
         enum: Object.values(UserRole),
@@ -22,6 +23,8 @@ export class User {
     })
     role: UserRole;
 
+    @Prop({ required: true })
+    contact: string;
     @Prop({ type: Boolean, default: false })
     isVerified: boolean;
 

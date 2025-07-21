@@ -8,9 +8,7 @@ export class UserProfile {
     @Prop({ required: true })
     address: string;
 
-    @Prop({ required: true })
-    contact: number;
-
+    
     @Prop({ required: true })
     dateOfBirth: Date;
 

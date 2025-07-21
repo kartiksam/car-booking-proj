@@ -1,14 +1,22 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Booking, BookingDocument } from 'src/schemas/booking.schema';
 import { Model } from 'mongoose';
 import { BookingDto } from './dtos/booking.dto';
 import { driver_Profile, DriverProfileDocument } from 'src/schemas/driver_profile.schema';
 import { Vehicle, VehicleDocument } from 'src/schemas/vehicle.schema';
+import { BookingGateway } from 'src/gateway/gateway.service';
+
 @Injectable()
 export class BookingService {
 
-    constructor(@InjectModel(Booking.name) private bookingModel: Model<BookingDocument>, @InjectModel(driver_Profile.name) private driverModel: Model<DriverProfileDocument>, @InjectModel(Vehicle.name) private vehicleModel: Model<VehicleDocument>) { }
+    constructor(@InjectModel(Booking.name) private bookingModel: Model<BookingDocument>,
+        @InjectModel(driver_Profile.name) private driverModel: Model<DriverProfileDocument>,
+        @InjectModel(Vehicle.name) private vehicleModel: Model<VehicleDocument>,
+
+        private readonly bookingGateway: BookingGateway,
+
+    ) { }
 
 
     async createBooking(req: Request, dto: BookingDto): Promise<Booking> {
@@ -68,12 +76,38 @@ export class BookingService {
 
         });
 
+        this.bookingGateway.emitBookingToDriver(selectedDriver._id.toString(), {
+            bookingId: booking._id,
+            pickupLocation,
+            dropLocation,
+            rideDate,
+        });
+
+
 
         await this.driverModel.findByIdAndUpdate(selectedDriver._id, { status: 'ON_RIDE' });
         await this.vehicleModel.findByIdAndUpdate(selectedVehicle._id, { status: 'in_use' });
 
         return booking;
     }
+
+
+    async acceptBooking(bookingId: string, userId: string) {
+        const driver = await this.driverModel.find({ userId }).exec();
+        if (!driver) {
+            throw new NotFoundException('Driver Not Found');
+
+        }
+        
+
+    }
+
+
+
+
+
+
+
 
 
 
@@ -96,5 +130,25 @@ export class BookingService {
         console.log(`Found ${bookings.length} bookings for driver ID: ${driver._id} `);
         return bookings;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
