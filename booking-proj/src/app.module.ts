@@ -15,12 +15,13 @@ import { VehicleModule } from './vehicle/vehicle.module';
 import { UserDetailsModule } from './user-details/user-details.module';
 import { GatewayModule } from './gateway/gateway.module';
 import { TwilioModule } from './twilio/twilio.module';
+import { ChatModule } from './chat/chat.module';
 
 
 
 
 @Module({
-  imports: [MongooseModule.forRoot('mongodb://localhost:27017/cab'), UsersModule, AuthModule, OtpsModule, EmailModule, OtpsModule, LoginModule, ConfigModule.forRoot({ isGlobal: true }), ScheduleModule.forRoot(), DriverModule, BookingModule, VehicleModule, UserDetailsModule, GatewayModule, TwilioModule],
+  imports: [MongooseModule.forRoot('mongodb://localhost:27017/cab'), UsersModule, AuthModule, OtpsModule, EmailModule, OtpsModule, LoginModule, ConfigModule.forRoot({ isGlobal: true }), ScheduleModule.forRoot(), DriverModule, BookingModule, VehicleModule, UserDetailsModule, GatewayModule, TwilioModule, ChatModule],
   controllers: [],
   providers: [AppService,],
 })

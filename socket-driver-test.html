@@ -1,4 +1,4 @@
-<!-- driver-socket-test.html -->
+<!-- driver-socket-test.html
 <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
 <script>
   const driverId = "6878cefe29b4de90263c9e56";
@@ -13,4 +13,98 @@
   socket.on("newBookingRequest", (data) => {
     console.log("🚕 New Booking Received:", data);
   });
-</script>
+</script> -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Socket Chat</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  </head>
+  <body>
+    <h2>Cab Chat - Token-Based Auth (Authorization Header)</h2>
+
+    <label>
+      Bearer Token:
+      <input
+        id="tokenInput"
+        type="text"
+        size="90"
+        placeholder="Paste Bearer eyJh..."
+      />
+    </label>
+    <br /><br />
+
+    <button onclick="connectSocket()">Connect</button>
+    <hr />
+
+    <label>
+      Message:
+      <input
+        id="messageInput"
+        type="text"
+        size="50"
+        placeholder="Type a message"
+      />
+    </label>
+    <button onclick="sendMessage()">Send</button>
+
+    <h3>Messages</h3>
+    <ul id="messages"></ul>
+
+    <script>
+      let socket;
+
+      function connectSocket() {
+        const token = document.getElementById("tokenInput").value.trim();
+        if (!token.startsWith("Bearer ")) {
+          alert("❌ Token must start with 'Bearer '");
+          return;
+        }
+
+        // Connect with Authorization header
+        socket = io("http://localhost:3002", {
+          extraHeaders: {
+            Authorization: token,
+          },
+        });
+
+        socket.on("connect", () => {
+          console.log("✅ Connected:", socket.id);
+          appendMessage(`✅ Connected as socket ID: ${socket.id}`);
+        });
+
+        socket.on("receiveMessage", (msg) => {
+          appendMessage(`📨 Received: ${msg.message}`);
+        });
+
+        socket.on("connect_error", (err) => {
+          console.error("❌ Connection error:", err.message);
+          appendMessage(`❌ Connection error: ${err.message}`);
+        });
+
+        socket.on("disconnect", () => {
+          appendMessage("⚠️ Disconnected");
+        });
+      }
+
+      function sendMessage() {
+        const msg = document.getElementById("messageInput").value;
+        if (msg && socket?.connected) {
+          socket.emit("sendMessage", msg);
+          appendMessage(`📤 Sent: ${msg}`);
+          document.getElementById("messageInput").value = "";
+        } else {
+          alert("❌ Socket not connected or message empty");
+        }
+      }
+
+      function appendMessage(text) {
+        const ul = document.getElementById("messages");
+        const li = document.createElement("li");
+        li.textContent = text;
+        ul.appendChild(li);
+      }
+    </script>
+  </body>
+</html>

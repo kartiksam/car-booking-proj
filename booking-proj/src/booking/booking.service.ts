@@ -5,7 +5,7 @@ import { Model } from 'mongoose';
 import { BookingDto } from './dtos/booking.dto';
 import { driver_Profile, DriverProfileDocument } from 'src/schemas/driver_profile.schema';
 import { Vehicle, VehicleDocument } from 'src/schemas/vehicle.schema';
-import { BookingGateway } from 'src/gateway/gateway.service';
+// import { BookingGateway } from 'src/gateway/gateway.service';
 
 @Injectable()
 export class BookingService {
@@ -14,7 +14,7 @@ export class BookingService {
         @InjectModel(driver_Profile.name) private driverModel: Model<DriverProfileDocument>,
         @InjectModel(Vehicle.name) private vehicleModel: Model<VehicleDocument>,
 
-        private readonly bookingGateway: BookingGateway,
+        // private readonly bookingGateway: BookingGateway,
 
     ) { }
 
@@ -66,7 +66,7 @@ export class BookingService {
 
 
         const booking = await this.bookingModel.create({
-
+            userId,
             driverId: selectedDriver._id,
             vehicleId: selectedVehicle._id,
             pickupLocation,
@@ -76,12 +76,12 @@ export class BookingService {
 
         });
 
-        this.bookingGateway.emitBookingToDriver(selectedDriver._id.toString(), {
-            bookingId: booking._id,
-            pickupLocation,
-            dropLocation,
-            rideDate,
-        });
+        // this.bookingGateway.emitBookingToDriver(selectedDriver._id.toString(), {
+        //     bookingId: booking._id,
+        //     pickupLocation,
+        //     dropLocation,
+        //     rideDate,
+        // });
 
 
 
@@ -98,7 +98,7 @@ export class BookingService {
             throw new NotFoundException('Driver Not Found');
 
         }
-        
+
 
     }
 
@@ -135,6 +135,11 @@ export class BookingService {
 
 
 
+    async findActiveBookingByUserId(userId: string): Promise<BookingDocument | null> {
+        return this.bookingModel.findOne({
+            userId
+        });
+    }
 
 
 

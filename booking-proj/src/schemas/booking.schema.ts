@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
+import { Document, HydratedDocument } from "mongoose";
 import * as moment from "moment";
-export type BookingDocument = Booking & Document;
+export type BookingDocument = HydratedDocument<Booking>;
 
 @Schema()
 export class Booking {
@@ -38,6 +38,9 @@ export class Booking {
 
     @Prop({ required: true })
     driverId: string;
+
+    @Prop()
+    userId: string;
 
 
     @Prop({ default: null })
