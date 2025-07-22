@@ -64,6 +64,7 @@ export class ChatGateway implements OnGatewayConnection {
             }
 
             const booking: BookingDocument | null = await this.bookingService.findActiveBookingByUserId(senderId);
+            console.log("booking is", booking);
             if (!booking) {
                 throw new Error("No active booking found");
             }
@@ -71,6 +72,7 @@ export class ChatGateway implements OnGatewayConnection {
                 booking.driverId.toString() === senderId
                     ? booking.userId.toString()
                     : booking.driverId.toString();
+            console.log("receiver id", receiverId);
 
             console.log(`📨 Message from  ${messageText}`);
 
@@ -82,10 +84,10 @@ export class ChatGateway implements OnGatewayConnection {
                 bookingId: booking._id.toString()
             });
 
-
+            // works fine
             // Find receiver's socket
             const receiverSocketId = [...this.socketUserMap.entries()].find(([_, uid]) => uid === receiverId)?.[0];
-
+            console.log("receievrsocketod", receiverSocketId)
             if (receiverSocketId) {
                 this.server.to(receiverSocketId).emit("receiveMessage", message);
             } else {
