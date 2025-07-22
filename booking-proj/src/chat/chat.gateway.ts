@@ -14,7 +14,7 @@ import { Request } from 'express';
 import { BookingService } from "src/booking/booking.service";
 import { BookingDocument } from "src/schemas/booking.schema";
 
-@WebSocketGateway(3002, { cors: { origin: '*' } }) // Port 3002 if you're running it separately
+@WebSocketGateway({ cors: { origin: '*' } }) // Port 3002 if you're running it separately
 export class ChatGateway implements OnGatewayConnection {
 
     constructor(private readonly chatService: ChatService, private readonly authService: AuthService, private readonly bookingService: BookingService) { }
@@ -35,7 +35,11 @@ export class ChatGateway implements OnGatewayConnection {
             }
             const token = authHeader.replace("Bearer ", "");
             const payload = await this.authService.verifyToken(token);
-            const userId = payload.sub;
+            const userId = payload.id;
+            if (!userId) {
+                console.log("❌ Token verified but no userId found in payload:", payload);
+                throw new Error('Invalid token payload');
+            }
             // save mapping
             this.socketUserMap.set(socket.id, userId);
 
@@ -54,6 +58,7 @@ export class ChatGateway implements OnGatewayConnection {
         try {
 
             const senderId = this.socketUserMap.get(socket.id);
+            console.log("senderId is", senderId);
             if (!senderId) {
                 throw new Error("Sender not recognized");
             }
