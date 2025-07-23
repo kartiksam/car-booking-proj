@@ -142,6 +142,12 @@ export class BookingService {
     }
 
 
+    async findActiveBookingByDriverId(driverId: string): Promise<BookingDocument | null> {
+        return await this.bookingModel.findOne({
+            driverId: driverId,
+
+        }).exec();
+    }
 
 
 

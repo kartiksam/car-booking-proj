@@ -2,52 +2,58 @@ import {
     ConnectedSocket,
     MessageBody,
     OnGatewayConnection,
+    OnGatewayDisconnect,
     SubscribeMessage,
     WebSocketGateway,
     WebSocketServer
 } from "@nestjs/websockets";
-import { Server, Socket } from "socket.io"; // ✅ Correct import
+import { Server, Socket } from "socket.io";
 import { ChatService } from "./chat.service";
 import { sendMessageDto } from "./dto/create-chat.dto";
 import { AuthService } from "src/auth/auth.service";
-import { Request } from 'express';
 import { BookingService } from "src/booking/booking.service";
 import { BookingDocument } from "src/schemas/booking.schema";
 
-@WebSocketGateway({ cors: { origin: '*' } }) // Port 3002 if you're running it separately
-export class ChatGateway implements OnGatewayConnection {
-
-    constructor(private readonly chatService: ChatService, private readonly authService: AuthService, private readonly bookingService: BookingService) { }
-
-    private socketUserMap = new Map<string, string>();
-
+@WebSocketGateway({ cors: { origin: '*' } })
+export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     @WebSocketServer()
     server: Server;
 
+    private socketUserMap = new Map<string, string>(); // socketId -> userId
+
+    constructor(
+        private readonly chatService: ChatService,
+        private readonly authService: AuthService,
+        private readonly bookingService: BookingService
+    ) { }
 
     async handleConnection(socket: Socket) {
         try {
-
             const authHeader = socket.handshake.headers.authorization;
             if (!authHeader?.startsWith('Bearer')) {
                 throw new Error('Invalid Authorization header');
             }
+
             const token = authHeader.replace("Bearer ", "");
             const payload = await this.authService.verifyToken(token);
             const userId = payload.id;
-            if (!userId) {
-                console.log("❌ Token verified but no userId found in payload:", payload);
-                throw new Error('Invalid token payload');
-            }
-            // save mapping
-            this.socketUserMap.set(socket.id, userId);
 
-            console.log(`connected user: ${socket.id}`);
+            if (!userId) {
+                throw new Error('Invalid token payload, userId missing');
+            }
+
+            this.socketUserMap.set(socket.id, userId);
+            console.log(`✅ User connected | userId: ${userId} | socketId: ${socket.id}`);
         } catch (error) {
-            console.error("Error during connection:", error);
+            console.error("❌ Connection error:", error.message);
             socket.disconnect();
         }
+    }
+
+    handleDisconnect(socket: Socket) {
+        this.socketUserMap.delete(socket.id);
+        console.log(`⚠️ User disconnected | socketId: ${socket.id}`);
     }
 
     @SubscribeMessage("sendMessage")
@@ -55,28 +61,32 @@ export class ChatGateway implements OnGatewayConnection {
         @MessageBody() messageText: string,
         @ConnectedSocket() socket: Socket
     ) {
+        const senderId = this.socketUserMap.get(socket.id);
+
+        if (!senderId) {
+            console.warn("❌ Sender not recognized. No mapping found.");
+            return;
+        }
+
         try {
+            let booking: BookingDocument | null =
+                await this.bookingService.findActiveBookingByUserId(senderId);
 
-            const senderId = this.socketUserMap.get(socket.id);
-            console.log("senderId is", senderId);
-            if (!senderId) {
-                throw new Error("Sender not recognized");
-            }
-
-            const booking: BookingDocument | null = await this.bookingService.findActiveBookingByUserId(senderId);
-            console.log("booking is", booking);
             if (!booking) {
-                throw new Error("No active booking found");
+                booking = await this.bookingService.findActiveBookingByDriverId(senderId);
             }
+
+            if (!booking || !booking.userId || !booking.driverId) {
+                throw new Error("Active booking with both user and driver not found");
+            }
+
             const receiverId =
                 booking.driverId.toString() === senderId
                     ? booking.userId.toString()
                     : booking.driverId.toString();
-            console.log("receiver id", receiverId);
 
-            console.log(`📨 Message from  ${messageText}`);
+            console.log(`📨 Message received | from: ${senderId} to: ${receiverId} | text: "${messageText}"`);
 
-            // Save message
             const message = await this.chatService.saveMessage({
                 senderId,
                 receiverId,
@@ -84,26 +94,34 @@ export class ChatGateway implements OnGatewayConnection {
                 bookingId: booking._id.toString()
             });
 
-            // works fine
-            // Find receiver's socket
-            const receiverSocketId = [...this.socketUserMap.entries()].find(([_, uid]) => uid === receiverId)?.[0];
-            console.log("receievrsocketod", receiverSocketId)
+            const receiverSocketId = [...this.socketUserMap.entries()]
+                .find(([_, uid]) => uid === receiverId)?.[0];
+
             if (receiverSocketId) {
                 this.server.to(receiverSocketId).emit("receiveMessage", message);
+                console.log(`📤 Message sent to receiver | socketId: ${receiverSocketId}`);
             } else {
-                console.warn("Receiver not connected");
+                console.warn("⚠️ Receiver is not connected");
             }
 
-
-
         } catch (error) {
-            console.error(" Error sending message:", error);
+            console.error("❌ Error sending message:", error.message);
         }
     }
-
-    handleDisconnect(socket: Socket) {
-        this.socketUserMap.delete(socket.id);
-        console.log(`⚠️ User disconnected: ${socket.id}`);
-    }
-
 }
+
+
+
+
+
+// {
+//     "pickupLocation": {
+//         "lat": 12.9720,
+//             "lng": 77.5950
+//     },
+//     "dropLocation": {
+//         "lat": 12.9260,
+//             "lng": 77.6762
+//     },
+//     "rideDate": "2025-07-22T10:00:00.000Z"
+// }
