@@ -49,6 +49,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             console.error("❌ Connection error:", error.message);
             socket.disconnect();
         }
+        console.log("Connected user map:", this.socketUserMap);
+
     }
 
     handleDisconnect(socket: Socket) {
@@ -81,9 +83,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             }
 
             const receiverId =
-                booking.driverId.toString() === senderId
-                    ? booking.userId.toString()
-                    : booking.driverId.toString();
+                booking.driverId
 
             console.log(`📨 Message received | from: ${senderId} to: ${receiverId} | text: "${messageText}"`);
 
